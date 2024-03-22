@@ -3,10 +3,16 @@ import { Product, Bid, User } from '../orm/index.js'
 import authMiddleware from '../middlewares/auth.js'
 import { getDetails } from '../validators/index.js'
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/api/products', async (req, res, next) => {
-  res.status(600).send()
+router.get('/api/products', async (req, res) => {
+  try {
+    const products = await Product.findAll()
+    res.json(products)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des produits.' })
+  }
 })
 
 router.get('/api/products/:productId', async (req, res) => {
