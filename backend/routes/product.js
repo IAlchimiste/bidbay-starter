@@ -125,4 +125,26 @@ router.delete('/api/products/:productId', authMiddleware, async (req, res) => {
   }
 })
 
+router.post('/api/products/:productId/bids', authMiddleware, async (req, res) => {
+  try {
+    const product = await Product.findOne({ where: { id: req.params.productId } });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    // Check if the request body is valid
+    if (!req.body.amount) {
+      return res.status(400).json({ error: 'Missing or invalid fields' });
+    }
+    const bid = await Bid.create({
+      productId: req.params.productId,
+      userId: req.user.id,
+      amount: req.body.amount
+    });
+    res.status(201).json(bid);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
 export default router
