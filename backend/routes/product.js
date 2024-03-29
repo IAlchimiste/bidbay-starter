@@ -33,8 +33,7 @@ router.get('/api/products', async (req, res, next) => {
 
 router.get('/api/products/:productId', async (req, res) => {
   try {
-    const productId = req.params.productId
-    const product = await Product.findOne({
+    const product = await Product.findByPk(req.params.productId, {
       include: [{
         model: User,
         as: 'seller',
@@ -49,18 +48,17 @@ router.get('/api/products/:productId', async (req, res) => {
           as: 'bidder',
           attributes: ['id', 'username', 'email']
         }]
-      }
-      ],
-      where: {
-        id: productId
-      }
-    })
-    res.status(200).json(product)
+      }]
+    });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.status(200).json(product);
   } catch (error) {
-    console.error('Error fetching products:', error)
-    res.status(500).json({ error: 'Internal Server Error' })
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-})
+});
 
 // You can use the authMiddleware with req.user.id to authenticate your endpoint ;)
 
@@ -90,6 +88,7 @@ router.post('/api/products', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Une erreur est survenue lors de la création du produit.' })
   }
 })
+
 
 router.put('/api/products/:productId', async (req, res) => {
   res.status(600).send()
