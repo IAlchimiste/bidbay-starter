@@ -3,12 +3,19 @@ import { ref, computed } from "vue";
 
 const loading = ref(false);
 const error = ref(false);
+const products = ref([]);
 
 async function fetchProducts() {
   loading.value = true;
   error.value = false;
 
   try {
+    const response = await fetch("http://localhost:3000/api/products");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    products.value = data;
   } catch (e) {
     error.value = true;
   } finally {
@@ -18,6 +25,7 @@ async function fetchProducts() {
 
 fetchProducts();
 </script>
+
 
 <template>
   <div>
@@ -29,17 +37,17 @@ fetchProducts();
           <div class="input-group">
             <span class="input-group-text">Filtrage</span>
             <input
-              type="text"
-              class="form-control"
-              placeholder="Filtrer par nom"
-              data-test-filter
+                type="text"
+                class="form-control"
+                placeholder="Filtrer par nom"
+                data-test-filter
             />
           </div>
         </form>
       </div>
       <div class="col-md-6 text-end">
         <div class="btn-group">
-          <button
+        <button
             type="button"
             class="btn btn-primary dropdown-toggle"
             data-bs-toggle="dropdown"
@@ -71,12 +79,13 @@ fetchProducts();
     <div class="alert alert-danger mt-4" role="alert" data-test-error>
       Une erreur est survenue lors du chargement des produits.
     </div>
+
     <div class="row">
-      <div class="col-md-4 mb-4" v-for="i in 10" data-test-product :key="i">
+      <div class="col-md-4 mb-4" v-for="product in products"  :key="product.id" data-test-product>
         <div class="card">
-          <RouterLink :to="{ name: 'Product', params: { productId: 'TODO' } }">
+          <RouterLink :to="{ name: 'Product', params: { productId: 'product.id' } }">
             <img
-              src="https://picsum.photos/id/403/512/512"
+                :src="product.pictureUrl"
               data-test-product-picture
               class="card-img-top"
             />
@@ -85,27 +94,30 @@ fetchProducts();
             <h5 class="card-title">
               <RouterLink
                 data-test-product-name
-                :to="{ name: 'Product', params: { productId: 'TODO' } }"
+                :to="{ name: 'Product', params: { productId: 'product.id' } }"
               >
-                Machine à écrire
+                {{ product.name }}
               </RouterLink>
             </h5>
             <p class="card-text" data-test-product-description>
-              Machine à écrire vintage en parfait état de fonctionnement
+              {{ product.description }}
             </p>
+            
             <p class="card-text">
-              Vendeur :
-              <RouterLink
-                data-test-product-seller
-                :to="{ name: 'User', params: { userId: 'TODO' } }"
-              >
-                alice
-              </RouterLink>
+
+            Vendeur :
+
+            <RouterLink :to="{ name: 'User', params: { userId: product['sellerId'] } }" data-test-product-seller>
+
+              {{ product['seller']['username'] }}
+
+            </RouterLink>
             </p>
+
             <p class="card-text" data-test-product-date>
-              En cours jusqu'au 05/04/2026
+              En cours jusqu'au {{new Date(product.endDate).toLocaleDateString() }}
             </p>
-            <p class="card-text" data-test-product-price>Prix actuel : 42 €</p>
+            <p class="card-text" data-test-product-price>Prix actuel : {{ product.originalPrice }} €</p>
           </div>
         </div>
       </div>
