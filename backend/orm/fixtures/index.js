@@ -3,6 +3,8 @@
 // Vous risqueriez de compromettre les tests Cypress
 
 import { Bid, Product, User } from '../index.js'
+import { JWT_SECRET } from '../../consts/secret.js'
+import jet from 'jsonwebtoken'
 
 export async function regenerateFixtures () {
   await Bid.destroy({ where: { } })
@@ -264,4 +266,12 @@ export async function regenerateFixtures () {
     price: 185,
     date: new Date(Date.now() - 0.5 * DAY)
   })
+  
+  const playload = {
+    id: userAlice.id,
+    username: userAlice.username,
+    email: userAlice.email,
+    admin: userAlice.admin
+  }
+  console.log('Alice token', jet.sign(playload, JWT_SECRET))
 }

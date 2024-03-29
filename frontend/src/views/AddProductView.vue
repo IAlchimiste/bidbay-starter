@@ -10,7 +10,41 @@ if (!isAuthenticated.value) {
   router.push({ name: "Login" });
 }
 
-// router.push({ name: "Product", params: { productId: 'TODO } });
+const name = ref("");
+const description = ref("");
+const category = ref("");
+const originalPrice = ref("");
+const pictureUrl = ref("");
+const endDate = ref("");
+
+const submitForm = async () => {
+  try {
+    const response = await fetch("/api/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.value}`
+      },
+      body: JSON.stringify({
+        name: name.value,
+        description: description.value,
+        category: category.value,
+        originalPrice: originalPrice.value,
+        pictureUrl: pictureUrl.value,
+        endDate: endDate.value,
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Une erreur est survenue lors de la création du produit.");
+    }
+
+    const product = await response.json();
+    router.push({ name: "Product", params: { productId: product.id } });
+  } catch (error) {
+    console.error(error);
+  }
+};
 </script>
 
 <template>
@@ -18,7 +52,7 @@ if (!isAuthenticated.value) {
 
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <form>
+      <form >
         <div class="alert alert-danger mt-4" role="alert" data-test-error>
           Une erreur s'est produite
         </div>
@@ -26,6 +60,7 @@ if (!isAuthenticated.value) {
         <div class="mb-3">
           <label for="product-name" class="form-label"> Nom du produit </label>
           <input
+              v-model="name"
             type="text"
             class="form-control"
             id="product-name"
@@ -39,6 +74,7 @@ if (!isAuthenticated.value) {
             Description
           </label>
           <textarea
+              v-model="description"
             class="form-control"
             id="product-description"
             name="description"
@@ -51,6 +87,7 @@ if (!isAuthenticated.value) {
         <div class="mb-3">
           <label for="product-category" class="form-label"> Catégorie </label>
           <input
+
             type="text"
             class="form-control"
             id="product-category"
@@ -65,6 +102,7 @@ if (!isAuthenticated.value) {
           </label>
           <div class="input-group">
             <input
+              v-model="originalPrice"
               type="number"
               class="form-control"
               id="product-original-price"
@@ -83,6 +121,7 @@ if (!isAuthenticated.value) {
             URL de l'image
           </label>
           <input
+            v-model="pictureUrl"
             type="url"
             class="form-control"
             id="product-picture-url"
@@ -97,6 +136,7 @@ if (!isAuthenticated.value) {
             Date de fin de l'enchère
           </label>
           <input
+            v-model="endDate"
             type="date"
             class="form-control"
             id="product-end-date"
@@ -110,7 +150,7 @@ if (!isAuthenticated.value) {
           <button
             type="submit"
             class="btn btn-primary"
-            disabled
+
             data-test-submit
           >
             Ajouter le produit
@@ -118,7 +158,7 @@ if (!isAuthenticated.value) {
               data-test-spinner
               class="spinner-border spinner-border-sm"
               role="status"
-              aria-hidden="true"
+              aria-hidden="false"
             ></span>
           </button>
         </div>
