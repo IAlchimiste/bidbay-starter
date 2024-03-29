@@ -90,12 +90,39 @@ router.post('/api/products', authMiddleware, async (req, res) => {
   }
 })
 
-router.put('/api/products/:productId', async (req, res) => {
-  res.status(600).send()
+router.put('/api/products/:productId', authMiddleware, async (req, res) => {
+  try {
+    const product = await Product.findOne({ where: { id: req.params.productId } });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    if (product.sellerId !== req.user.id && !req.user.admin) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    // Update the product here
+    const updatedProduct = await product.update(req.body);
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 })
 
-router.delete('/api/products/:productId', async (req, res) => {
-  res.status(600).send()
+router.delete('/api/products/:productId', authMiddleware, async (req, res) => {
+  try {
+    const product = await Product.findOne({ where: { id: req.params.productId } });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    if (product.sellerId !== req.user.id && !req.user.admin) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    await product.destroy();
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 })
 
 export default router
