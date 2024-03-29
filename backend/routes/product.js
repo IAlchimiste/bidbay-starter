@@ -65,6 +65,8 @@ router.get('/api/products/:productId', async (req, res) => {
 // You can use the authMiddleware with req.user.id to authenticate your endpoint ;)
 
 router.post('/api/products', authMiddleware, async (req, res) => {
+  console.log(req.body)
+
   try {
     const { name, description, category, originalPrice, pictureUrl, endDate } = req.body
     const userId = req.user.id
@@ -80,6 +82,7 @@ router.post('/api/products', authMiddleware, async (req, res) => {
       pictureUrl,
       endDate,
       sellerId: userId
+
     })
 
     console.log(product)

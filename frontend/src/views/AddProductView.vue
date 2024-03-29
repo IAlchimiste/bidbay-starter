@@ -18,12 +18,24 @@ const pictureUrl = ref("");
 const endDate = ref("");
 
 const submitForm = async () => {
+  console.log("submitForm is called");
+
+  console.log("Submitting form with the following data:", {
+    name: name.value,
+    description: description.value,
+    category: category.value,
+    originalPrice: originalPrice.value,
+    pictureUrl: pictureUrl.value,
+    endDate: endDate.value,
+  });
+
   try {
-    const response = await fetch("/api/products", {
+    console.log("Sending fetch request to http://localhost:3000/api/products");
+    const response = await fetch("http://localhost:3000/api/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token.value}`
+        Authorization: `Bearer ${token.value}`,
       },
       body: JSON.stringify({
         name: name.value,
@@ -32,17 +44,33 @@ const submitForm = async () => {
         originalPrice: originalPrice.value,
         pictureUrl: pictureUrl.value,
         endDate: endDate.value,
-      })
+      }),
     });
 
+    console.log("Fetch request sent, response received");
+
     if (!response.ok) {
-      throw new Error("Une erreur est survenue lors de la création du produit.");
+      console.error("Response not OK:", response);
+      throw new Error(
+        "Une erreur est survenue lors de la création du produit.",
+      );
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.error(
+        "Invalid content-type. Expected application/json but received " +
+          contentType,
+      );
+      const errorText = await response.text();
+      throw new Error(errorText);
     }
 
     const product = await response.json();
+    console.log("Product created:", product);
     router.push({ name: "Product", params: { productId: product.id } });
   } catch (error) {
-    console.error(error);
+    console.error("Error while submitting form:", error);
   }
 };
 </script>
@@ -60,7 +88,7 @@ const submitForm = async () => {
         <div class="mb-3">
           <label for="product-name" class="form-label"> Nom du produit </label>
           <input
-              v-model="name"
+            v-model="name"
             type="text"
             class="form-control"
             id="product-name"
@@ -74,7 +102,7 @@ const submitForm = async () => {
             Description
           </label>
           <textarea
-              v-model="description"
+            v-model="description"
             class="form-control"
             id="product-description"
             name="description"
@@ -87,7 +115,7 @@ const submitForm = async () => {
         <div class="mb-3">
           <label for="product-category" class="form-label"> Catégorie </label>
           <input
-
+            v-model="category"
             type="text"
             class="form-control"
             id="product-category"
@@ -148,8 +176,9 @@ const submitForm = async () => {
 
         <div class="d-grid gap-2">
           <button
-            type="submit"
+            type="button"
             class="btn btn-primary"
+            @click="submitForm"
             data-test-submit
           >
             Ajouter le produit
@@ -157,7 +186,7 @@ const submitForm = async () => {
               data-test-spinner
               class="spinner-border spinner-border-sm"
               role="status"
-              aria-hidden="false"
+              aria-hidden="true"
             ></span>
           </button>
         </div>
