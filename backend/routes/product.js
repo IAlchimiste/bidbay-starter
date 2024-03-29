@@ -31,6 +31,7 @@ router.get('/api/products', async (req, res, next) => {
   }
 })
 
+
 router.get('/api/products/:productId', async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.productId, {
@@ -61,14 +62,16 @@ router.get('/api/products/:productId', async (req, res) => {
 });
 
 // You can use the authMiddleware with req.user.id to authenticate your endpoint ;)
-
 router.post('/api/products', authMiddleware, async (req, res) => {
   try {
     const { name, description, category, originalPrice, pictureUrl, endDate } = req.body
     const userId = req.user.id
 
     if (!name || !description || !category || !originalPrice || !pictureUrl || !endDate) {
-      return res.status(400).json({ error: 'Tous les champs sont requis.' })
+      return res.status(400).json({ 
+        error: 'Invalid or missing fields',
+        details: 'Some details about the error...' // Ajoutez des détails sur l'erreur ici
+      })
     }
     const product = await Product.create({
       name,
@@ -80,15 +83,12 @@ router.post('/api/products', authMiddleware, async (req, res) => {
       sellerId: userId
     })
 
-    console.log(product)
-
     res.status(201).json(product)
   } catch (error) {
     console.error(error)
-    res.status(500).json({ error: 'Une erreur est survenue lors de la création du produit.' })
+    res.status(500).json({ error: 'An error occurred while creating the product.' })
   }
 })
-
 
 router.put('/api/products/:productId', async (req, res) => {
   res.status(600).send()
