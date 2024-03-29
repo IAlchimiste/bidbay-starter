@@ -37,17 +37,17 @@ fetchProducts();
           <div class="input-group">
             <span class="input-group-text">Filtrage</span>
             <input
-                type="text"
-                class="form-control"
-                placeholder="Filtrer par nom"
-                data-test-filter
+              type="text"
+              class="form-control"
+              placeholder="Filtrer par nom"
+              data-test-filter
             />
           </div>
         </form>
       </div>
       <div class="col-md-6 text-end">
         <div class="btn-group">
-        <button
+          <button
             type="button"
             class="btn btn-primary dropdown-toggle"
             data-bs-toggle="dropdown"
@@ -85,7 +85,7 @@ fetchProducts();
         <div class="card">
           <RouterLink :to="{ name: 'Product', params: { productId: 'product.id' } }">
             <img
-                :src="product.pictureUrl"
+              :src="product.pictureUrl"
               data-test-product-picture
               class="card-img-top"
             />
@@ -102,16 +102,16 @@ fetchProducts();
             <p class="card-text" data-test-product-description>
               {{ product.description }}
             </p>
-            
+
             <p class="card-text">
 
-            Vendeur :
+              Vendeur :
 
-            <RouterLink :to="{ name: 'User', params: { userId: product['sellerId'] } }" data-test-product-seller>
+              <RouterLink :to="{ name: 'User', params: { userId: product['sellerId'] } }" data-test-product-seller>
 
-              {{ product['seller']['username'] }}
+                {{ product['seller']['username'] }}
 
-            </RouterLink>
+              </RouterLink>
             </p>
 
             <p class="card-text" data-test-product-date>
