@@ -52,7 +52,7 @@ const submitForm = async () => {
 
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <form >
+      <form @submit.prevent="submitForm">
         <div class="alert alert-danger mt-4" role="alert" data-test-error>
           Une erreur s'est produite
         </div>
@@ -150,7 +150,6 @@ const submitForm = async () => {
           <button
             type="submit"
             class="btn btn-primary"
-
             data-test-submit
           >
             Ajouter le produit

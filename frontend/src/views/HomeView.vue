@@ -37,17 +37,17 @@ fetchProducts();
           <div class="input-group">
             <span class="input-group-text">Filtrage</span>
             <input
-                type="text"
-                class="form-control"
-                placeholder="Filtrer par nom"
-                data-test-filter
+              type="text"
+              class="form-control"
+              placeholder="Filtrer par nom"
+              data-test-filter
             />
           </div>
         </form>
       </div>
       <div class="col-md-6 text-end">
         <div class="btn-group">
-        <button
+          <button
             type="button"
             class="btn btn-primary dropdown-toggle"
             data-bs-toggle="dropdown"
@@ -80,13 +80,12 @@ fetchProducts();
       Une erreur est survenue lors du chargement des produits.
     </div>
 
-
     <div class="row">
       <div class="col-md-4 mb-4" v-for="product in products"  :key="product.id" data-test-product>
         <div class="card">
           <RouterLink :to="{ name: 'Product', params: { productId: 'product.id' } }">
             <img
-                :src="product.pictureUrl"
+              :src="product.pictureUrl"
               data-test-product-picture
               class="card-img-top"
             />
@@ -103,15 +102,18 @@ fetchProducts();
             <p class="card-text" data-test-product-description>
               {{ product.description }}
             </p>
+
             <p class="card-text">
+
               Vendeur :
-              <RouterLink
-                data-test-product-seller
-                :to="{ name: 'User', params: { userId: 'product.sellerId' } }"
-              >
-                test
+
+              <RouterLink :to="{ name: 'User', params: { userId: product['sellerId'] } }" data-test-product-seller>
+
+                {{ product['seller']['username'] }}
+
               </RouterLink>
             </p>
+
             <p class="card-text" data-test-product-date>
               En cours jusqu'au {{new Date(product.endDate).toLocaleDateString() }}
             </p>
