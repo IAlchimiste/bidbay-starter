@@ -26,7 +26,6 @@ async function fetchProducts() {
 fetchProducts();
 </script>
 
-
 <template>
   <div>
     <h1 class="text-center mb-4">Liste des produits</h1>
@@ -81,9 +80,16 @@ fetchProducts();
     </div>
 
     <div class="row">
-      <div class="col-md-4 mb-4" v-for="product in products"  :key="product.id" data-test-product>
+      <div
+        class="col-md-4 mb-4"
+        v-for="product in products"
+        :key="product.id"
+        data-test-product
+      >
         <div class="card">
-          <RouterLink :to="{ name: 'Product', params: { productId: 'product.id' } }">
+          <RouterLink
+            :to="{ name: 'Product', params: { productId: product.id } }"
+          >
             <img
               :src="product.pictureUrl"
               data-test-product-picture
@@ -94,7 +100,7 @@ fetchProducts();
             <h5 class="card-title">
               <RouterLink
                 data-test-product-name
-                :to="{ name: 'Product', params: { productId: 'product.id' } }"
+                :to="{ name: 'Product', params: { productId: product.id } }"
               >
                 {{ product.name }}
               </RouterLink>
@@ -104,20 +110,23 @@ fetchProducts();
             </p>
 
             <p class="card-text">
-
               Vendeur :
 
-              <RouterLink :to="{ name: 'User', params: { userId: product['sellerId'] } }" data-test-product-seller>
-
-                {{ product['seller']['username'] }}
-
+              <RouterLink
+                :to="{ name: 'User', params: { userId: product['sellerId'] } }"
+                data-test-product-seller
+              >
+                {{ product["seller"]["username"] }}
               </RouterLink>
             </p>
 
             <p class="card-text" data-test-product-date>
-              En cours jusqu'au {{new Date(product.endDate).toLocaleDateString() }}
+              En cours jusqu'au
+              {{ new Date(product.endDate).toLocaleDateString() }}
             </p>
-            <p class="card-text" data-test-product-price>Prix actuel : {{ product.originalPrice }} €</p>
+            <p class="card-text" data-test-product-price>
+              Prix actuel : {{ product.originalPrice }} €
+            </p>
           </div>
         </div>
       </div>

@@ -1,13 +1,15 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute, useRouter, RouterLink } from "vue-router";
 import { useAuthStore } from "../store/auth";
+import axios from "axios";
 
 const { isAuthenticated, isAdmin, userData, token } = useAuthStore();
 
+const router = useRouter();
 const route = useRoute();
-
 const productId = ref(route.params.productId);
+const product = ref(null);
 
 /**
  * @param {number|string|Date|VarDate} date
@@ -16,10 +18,22 @@ function formatDate(date) {
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(date).toLocaleDateString("fr-FR", options);
 }
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/products/${productId.value}`,
+    );
+    product.value = response.data;
+    console.log(product.value);
+  } catch (e) {
+    console.error(e);
+  }
+});
 </script>
 
 <template>
-  <div class="row">
+  <div class="row" v-if="product">
     <div class="text-center mt-4" data-test-loading>
       <div class="spinner-border" role="status">
         <span class="visually-hidden">Chargement...</span>
@@ -33,7 +47,7 @@ function formatDate(date) {
       <!-- Colonne de gauche : image et compte à rebours -->
       <div class="col-lg-4">
         <img
-          src="https://picsum.photos/id/250/512/512"
+          :src="product.pictureUrl"
           alt=""
           class="img-fluid rounded mb-3"
           data-test-product-picture
@@ -55,7 +69,7 @@ function formatDate(date) {
         <div class="row">
           <div class="col-lg-6">
             <h1 class="mb-3" data-test-product-name>
-              Appareil photo argentique
+              {{ product.name }}
             </h1>
           </div>
           <div class="col-lg-6 text-end">
@@ -75,8 +89,7 @@ function formatDate(date) {
 
         <h2 class="mb-3">Description</h2>
         <p data-test-product-description>
-          Appareil photo argentique classique, parfait pour les amateurs de
-          photographie
+          {{ product.description }}
         </p>
 
         <h2 class="mb-3">Informations sur l'enchère</h2>
@@ -89,7 +102,7 @@ function formatDate(date) {
               :to="{ name: 'User', params: { userId: 'TODO' } }"
               data-test-product-seller
             >
-              alice
+              {{ product.seller.username }}
             </router-link>
           </li>
         </ul>
