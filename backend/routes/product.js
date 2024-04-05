@@ -34,21 +34,23 @@ router.get('/api/products', async (req, res, next) => {
 router.get('/api/products/:productId', async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.productId, {
-      include: [{
-        model: User,
-        as: 'seller',
-        attributes: ['id', 'username', 'email']
-      },
-      {
-        model: Bid,
-        as: 'bids',
-        attributes: ['id', 'price', 'date'],
-        include: [{
+      include: [
+        {
           model: User,
-          as: 'bidder',
+          as: 'seller',
           attributes: ['id', 'username', 'email']
-        }]
-      }]
+        },
+        {
+          model: Bid,
+          as: 'bids',
+          attributes: ['id', 'price', 'date'],
+          include: [{
+            model: User,
+            as: 'bidder',
+            attributes: ['id', 'username', 'email']
+          }]
+        }
+      ]
     })
     if (!product) {
       return res.status(404).json({ error: 'Product not found' })

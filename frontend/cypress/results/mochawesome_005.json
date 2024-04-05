@@ -1,0 +1,306 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 9,
+    "passes": 2,
+    "pending": 0,
+    "failures": 7,
+    "start": "2024-04-05T12:21:25.618Z",
+    "end": "2024-04-05T12:22:00.407Z",
+    "duration": 34789,
+    "testsRegistered": 9,
+    "passPercent": 22.22222222222222,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "16017790-d5ff-4869-8289-966088c441f0",
+      "title": "",
+      "fullFile": "cypress\\e2e\\frontend\\user.cy.js",
+      "file": "cypress\\e2e\\frontend\\user.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "cb7cac10-050e-40f4-bfb2-821aabdbe39e",
+          "title": "Page /users/:userId",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "display products",
+              "fullTitle": "Page /users/:userId display products",
+              "timedOut": null,
+              "duration": 461,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Test le scénario de récupération et d'affichage des produits\n(0, _orm.createProduct)().then(({\n  product\n}) => {\n  cy.visit(`http://localhost:5173/users/${_tokens.aliceId}`);\n  cy.get(\"[data-test-product]\").should(\"have.length\", 8);\n  cy.get(\"[data-test-product]\").last().find(\"[data-test-product-name]\").should(\"have.text\", product.name).invoke(\"attr\", \"href\").should(\"contain\", product.id);\n  cy.get(\"[data-test-product]\").last().find(\"[data-test-product-description]\").should(\"have.text\", product.description);\n  cy.get(\"[data-test-product]\").last().find(\"[data-test-product-price]\").should(\"contain.text\", product.originalPrice + \" €\");\n  cy.get(\"[data-test-product]\").last().find(\"[data-test-product-picture]\").invoke(\"attr\", \"src\").should(\"eq\", product.pictureUrl);\n});",
+              "err": {},
+              "uuid": "b832c3a7-a2b9-4950-89c3-32f5f5a287ce",
+              "parentUUID": "cb7cac10-050e-40f4-bfb2-821aabdbe39e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "display bids",
+              "fullTitle": "Page /users/:userId display bids",
+              "timedOut": null,
+              "duration": 105,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Test le scénario de récupération et d'affichage des offres\n(0, _orm.createProduct)(\"futur\", _tokens.bobToken).then(({\n  product\n}) => {\n  (0, _orm.createBid)(product.id, product.originalPrice, _tokens.aliceToken).then(({\n    bid\n  }) => {\n    cy.visit(`http://localhost:5173/users/${_tokens.aliceId}`);\n    cy.get(\"[data-test-bid]\").should(\"exist\");\n    cy.get(`[data-test-bid-product][href$=\"${product.id}\"]`).should(\"exist\").first().closest(\"[data-test-bid]\").then(el => {\n      cy.wrap(el).find(\"[data-test-bid-product]\").should(\"have.text\", product.name);\n      cy.wrap(el).find(\"[data-test-bid-price]\").should(\"have.text\", bid.price + \" €\");\n      cy.wrap(el).find(\"[data-test-bid-date]\").should(\"contain.text\", new Date().getDate()).should(\"contain.text\", new Date().getMonth() + 1).should(\"contain.text\", new Date().getFullYear());\n    });\n  });\n});",
+              "err": {},
+              "uuid": "b7c063b1-d88c-4e98-bcc7-de19f1c80657",
+              "parentUUID": "cb7cac10-050e-40f4-bfb2-821aabdbe39e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "no admin badge",
+              "fullTitle": "Page /users/:userId no admin badge",
+              "timedOut": null,
+              "duration": 5070,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Vérifie qu'un utilisateur a un badge admin si et seulement si il est admin\ncy.visit(`http://localhost:5173/users/${_tokens.aliceId}`);\ncy.get(\"[data-test-admin]\").should(\"not.exist\");\ncy.visit(`http://localhost:5173/users/${_tokens.adminId}`);\ncy.get(\"[data-test-admin]\").should(\"exist\");",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected <span.badge.rounded-pill.bg-primary> not to exist in the DOM, but it was continuously found.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected <span.badge.rounded-pill.bg-primary> not to exist in the DOM, but it was continuously found.\n    at Context.eval (webpack://frontend/./cypress/e2e/frontend/user.cy.js:88:32)\n    at runnable.fn (http://localhost:5173/__cypress/runner/cypress_runner.js:138654:19)\n    at callFn (http://localhost:5173/__cypress/runner/cypress_runner.js:157261:21)\n    at Runnable.run (http://localhost:5173/__cypress/runner/cypress_runner.js:157248:7)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:163172:30)\n    at PassThroughHandlerContext.finallyHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:4072:23)\n    at PassThroughHandlerContext.tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1807:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1519:31)",
+                "diff": null
+              },
+              "uuid": "9d00f7c4-1693-481c-b19b-7db6a3945d6b",
+              "parentUUID": "cb7cac10-050e-40f4-bfb2-821aabdbe39e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "loading",
+              "fullTitle": "Page /users/:userId loading",
+              "timedOut": null,
+              "duration": 4466,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Vérifie la présence d'un spinner au chargement\ncy.intercept(`http://localhost:3000/api/users/${_tokens.aliceId}`, {\n  delay: 10000\n});\ncy.visit(`http://localhost:5173/users/${_tokens.aliceId}`);\ncy.get(\"[data-test-loading]\").should(\"exist\");\ncy.get(\"[data-test-view]\").should(\"not.exist\");\ncy.get(\"[data-test-error]\").should(\"not.exist\");",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected <div> not to exist in the DOM, but it was continuously found.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected <div> not to exist in the DOM, but it was continuously found.\n    at Context.eval (webpack://frontend/./cypress/e2e/frontend/user.cy.js:105:31)\n    at runnable.fn (http://localhost:5173/__cypress/runner/cypress_runner.js:138654:19)\n    at callFn (http://localhost:5173/__cypress/runner/cypress_runner.js:157261:21)\n    at Runnable.run (http://localhost:5173/__cypress/runner/cypress_runner.js:157248:7)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:163172:30)\n    at PassThroughHandlerContext.finallyHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:4072:23)\n    at PassThroughHandlerContext.tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1807:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1519:31)",
+                "diff": null
+              },
+              "uuid": "f7bfbb9e-18f6-439a-a9f5-98ddf43a6512",
+              "parentUUID": "cb7cac10-050e-40f4-bfb2-821aabdbe39e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "error",
+              "fullTitle": "Page /users/:userId error",
+              "timedOut": null,
+              "duration": 4724,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Vérifie la présence d'une erreur en cas d'échec de chargement\ncy.intercept(`http://localhost:3000/api/users/${_tokens.aliceId}`, {\n  statusCode: 500\n});\ncy.visit(`http://localhost:5173/users/${_tokens.aliceId}`);\ncy.get(\"[data-test-error]\").should(\"exist\");\ncy.get(\"[data-test-loading]\").should(\"not.exist\");\ncy.get(\"[data-test-view]\").should(\"not.exist\");",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected <div.text-center> not to exist in the DOM, but it was continuously found.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected <div.text-center> not to exist in the DOM, but it was continuously found.\n    at Context.eval (webpack://frontend/./cypress/e2e/frontend/user.cy.js:119:34)\n    at runnable.fn (http://localhost:5173/__cypress/runner/cypress_runner.js:138654:19)\n    at callFn (http://localhost:5173/__cypress/runner/cypress_runner.js:157261:21)\n    at Runnable.run (http://localhost:5173/__cypress/runner/cypress_runner.js:157248:7)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:163172:30)\n    at PassThroughHandlerContext.finallyHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:4072:23)\n    at PassThroughHandlerContext.tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1807:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1519:31)",
+                "diff": null
+              },
+              "uuid": "041e1bf3-784f-4a49-9da9-396e251967df",
+              "parentUUID": "cb7cac10-050e-40f4-bfb2-821aabdbe39e",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "ready",
+              "fullTitle": "Page /users/:userId ready",
+              "timedOut": null,
+              "duration": 4374,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Vérifie la présence du contenu quand tout s'est bien chargé\ncy.visit(`http://localhost:5173/users/${_tokens.aliceId}`);\ncy.get(\"[data-test-error]\").should(\"not.exist\");\ncy.get(\"[data-test-loading]\").should(\"not.exist\");\ncy.get(\"[data-test-view]\").should(\"exist\");",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected <div.alert.alert-danger.mt-3> not to exist in the DOM, but it was continuously found.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected <div.alert.alert-danger.mt-3> not to exist in the DOM, but it was continuously found.\n    at Context.eval (webpack://frontend/./cypress/e2e/frontend/user.cy.js:128:32)\n    at runnable.fn (http://localhost:5173/__cypress/runner/cypress_runner.js:138654:19)\n    at callFn (http://localhost:5173/__cypress/runner/cypress_runner.js:157261:21)\n    at Runnable.run (http://localhost:5173/__cypress/runner/cypress_runner.js:157248:7)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:163172:30)\n    at PassThroughHandlerContext.finallyHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:4072:23)\n    at PassThroughHandlerContext.tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1807:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1519:31)",
+                "diff": null
+              },
+              "uuid": "4427c093-b730-44d9-a143-324dc8022cbd",
+              "parentUUID": "cb7cac10-050e-40f4-bfb2-821aabdbe39e",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "b832c3a7-a2b9-4950-89c3-32f5f5a287ce",
+            "b7c063b1-d88c-4e98-bcc7-de19f1c80657"
+          ],
+          "failures": [
+            "9d00f7c4-1693-481c-b19b-7db6a3945d6b",
+            "f7bfbb9e-18f6-439a-a9f5-98ddf43a6512",
+            "041e1bf3-784f-4a49-9da9-396e251967df",
+            "4427c093-b730-44d9-a143-324dc8022cbd"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 19200,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "2a31127d-e9af-4a17-8e29-1a62d9a39553",
+          "title": "Page /users/me",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "me as alice",
+              "fullTitle": "Page /users/me me as alice",
+              "timedOut": null,
+              "duration": 4732,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Vérifie que le contenu de la page est bien celui de l'utilisateur courant\ncy.visit(`http://localhost:5173/users/me`, {\n  onBeforeLoad: function (window) {\n    window.localStorage.setItem(\"token\", _tokens.aliceToken);\n  }\n});\ncy.get(\"[data-test-username]\").should(\"contain.text\", \"alice\");\ncy.get(\"[data-test-product]\").should(\"have.length\", 7);",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: expected '<h1.text-center>' to contain text 'alice', but the text was ' Utilisateur charly Admin'",
+                "estack": "AssertionError: Timed out retrying after 4000ms: expected '<h1.text-center>' to contain text 'alice', but the text was ' Utilisateur charly Admin'\n    at Context.eval (webpack://frontend/./cypress/e2e/frontend/user.cy.js:144:35)\n    at runnable.fn (http://localhost:5173/__cypress/runner/cypress_runner.js:138654:19)\n    at callFn (http://localhost:5173/__cypress/runner/cypress_runner.js:157261:21)\n    at Runnable.run (http://localhost:5173/__cypress/runner/cypress_runner.js:157248:7)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:163172:30)\n    at PassThroughHandlerContext.finallyHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:4072:23)\n    at PassThroughHandlerContext.tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1807:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1519:31)",
+                "diff": "- ' Utilisateur charly Admin'\n+ 'alice'\n"
+              },
+              "uuid": "e5e1fee7-f249-4712-b1f9-847a25c9fc95",
+              "parentUUID": "2a31127d-e9af-4a17-8e29-1a62d9a39553",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "me as bob",
+              "fullTitle": "Page /users/me me as bob",
+              "timedOut": null,
+              "duration": 4701,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Vérifie que le contenu de la page est bien celui de l'utilisateur courant\ncy.visit(`http://localhost:5173/users/me`, {\n  onBeforeLoad: function (window) {\n    window.localStorage.setItem(\"token\", _tokens.bobToken);\n  }\n});\ncy.get(\"[data-test-username]\").should(\"contain.text\", \"bob\");\ncy.get(\"[data-test-product]\").should(\"have.length\", 3);",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: expected '<h1.text-center>' to contain text 'bob', but the text was ' Utilisateur charly Admin'",
+                "estack": "AssertionError: Timed out retrying after 4000ms: expected '<h1.text-center>' to contain text 'bob', but the text was ' Utilisateur charly Admin'\n    at Context.eval (webpack://frontend/./cypress/e2e/frontend/user.cy.js:157:35)\n    at runnable.fn (http://localhost:5173/__cypress/runner/cypress_runner.js:138654:19)\n    at callFn (http://localhost:5173/__cypress/runner/cypress_runner.js:157261:21)\n    at Runnable.run (http://localhost:5173/__cypress/runner/cypress_runner.js:157248:7)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:163172:30)\n    at PassThroughHandlerContext.finallyHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:4072:23)\n    at PassThroughHandlerContext.tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1807:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1519:31)",
+                "diff": "- ' Utilisateur charly Admin'\n+ 'bob'\n"
+              },
+              "uuid": "f310f0de-3520-4fce-8cca-ef7b68b28487",
+              "parentUUID": "2a31127d-e9af-4a17-8e29-1a62d9a39553",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "me as admin",
+              "fullTitle": "Page /users/me me as admin",
+              "timedOut": null,
+              "duration": 4383,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Note : Vérifie que le contenu de la page est bien celui de l'utilisateur courant\ncy.visit(`http://localhost:5173/users/me`, {\n  onBeforeLoad: function (window) {\n    window.localStorage.setItem(\"token\", _tokens.adminToken);\n  }\n});\ncy.get(\"[data-test-username]\").should(\"contain.text\", \"admin\");",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: expected '<h1.text-center>' to contain text 'admin', but the text was ' Utilisateur charly Admin'",
+                "estack": "AssertionError: Timed out retrying after 4000ms: expected '<h1.text-center>' to contain text 'admin', but the text was ' Utilisateur charly Admin'\n    at Context.eval (webpack://frontend/./cypress/e2e/frontend/user.cy.js:170:35)\n    at runnable.fn (http://localhost:5173/__cypress/runner/cypress_runner.js:138654:19)\n    at callFn (http://localhost:5173/__cypress/runner/cypress_runner.js:157261:21)\n    at Runnable.run (http://localhost:5173/__cypress/runner/cypress_runner.js:157248:7)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:163172:30)\n    at PassThroughHandlerContext.finallyHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:4072:23)\n    at PassThroughHandlerContext.tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1807:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1519:31)",
+                "diff": "- ' Utilisateur charly Admin'\n+ 'admin'\n"
+              },
+              "uuid": "56e22b3c-4f46-4f32-bc76-0600a51fe609",
+              "parentUUID": "2a31127d-e9af-4a17-8e29-1a62d9a39553",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "e5e1fee7-f249-4712-b1f9-847a25c9fc95",
+            "f310f0de-3520-4fce-8cca-ef7b68b28487",
+            "56e22b3c-4f46-4f32-bc76-0600a51fe609"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 13816,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
