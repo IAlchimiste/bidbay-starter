@@ -94,8 +94,12 @@ onMounted(async () => {
 
         <h2 class="mb-3">Informations sur l'enchère</h2>
         <ul>
-          <li data-test-product-price>Prix de départ : 17 €</li>
-          <li data-test-product-end-date>Date de fin : 20 juin 2026</li>
+          <li data-test-product-price>
+            Prix de départ : {{ product.originalPrice }} €
+          </li>
+          <li data-test-product-end-date>
+            Date de fin : {{ product.endDate }}
+          </li>
           <li>
             Vendeur :
             <router-link
@@ -108,7 +112,11 @@ onMounted(async () => {
         </ul>
 
         <h2 class="mb-3">Offres sur le produit</h2>
-        <table class="table table-striped" data-test-bids>
+        <table
+          class="table table-striped"
+          data-test-bids
+          v-if="product.value && product.value.bids"
+        >
           <thead>
             <tr>
               <th scope="col">Enchérisseur</th>
@@ -118,17 +126,17 @@ onMounted(async () => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="i in 10" :key="i" data-test-bid>
+            <tr v-for="bid in product.value.bids" :key="bid.id" data-test-bid>
               <td>
                 <router-link
-                  :to="{ name: 'User', params: { userId: 'TODO' } }"
+                  :to="{ name: 'User', params: { userId: bid.bidder.id } }"
                   data-test-bid-bidder
                 >
-                  charly
+                  {{ bid.bidder.username }}
                 </router-link>
               </td>
-              <td data-test-bid-price>43 €</td>
-              <td data-test-bid-date>22 mars 2026</td>
+              <td data-test-bid-price>{{ bid.price }}</td>
+              <td data-test-bid-date>{{ formatDate(bid.date) }}</td>
               <td>
                 <button class="btn btn-danger btn-sm" data-test-delete-bid>
                   Supprimer
@@ -137,7 +145,16 @@ onMounted(async () => {
             </tr>
           </tbody>
         </table>
-        <p data-test-no-bids>Aucune offre pour le moment</p>
+        <p
+          v-if="
+            !product.value ||
+            !product.value.bids ||
+            product.value.bids.length === 0
+          "
+          data-test-no-bids
+        >
+          Aucune offre pour le moment
+        </p>
 
         <form data-test-bid-form>
           <div class="form-group">
