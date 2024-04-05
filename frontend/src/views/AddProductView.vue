@@ -1,5 +1,5 @@
 <script setup>
-import { useAuthStore } from "../store/auth";
+import { useAuthStore } from "@/store/auth";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 
@@ -10,69 +10,51 @@ if (!isAuthenticated.value) {
   router.push({ name: "Login" });
 }
 
-const name = ref("");
-const description = ref("");
-const category = ref("");
-const originalPrice = ref("");
-const pictureUrl = ref("");
-const endDate = ref("");
+const errorText = ref("");
+const loading = ref(false);
 
-const submitForm = async () => {
-  console.log("submitForm is called");
+const productName = ref("");
+const productDescription = ref("");
+const productCategory = ref("");
+const productOriginalPrice = ref("");
+const productPictureUrl = ref("");
+const productEndDate = ref("");
 
-  console.log("Submitting form with the following data:", {
-    name: name.value,
-    description: description.value,
-    category: category.value,
-    originalPrice: originalPrice.value,
-    pictureUrl: pictureUrl.value,
-    endDate: endDate.value,
-  });
-
+async function addProduct() {
   try {
-    console.log("Sending fetch request to http://localhost:3000/api/products");
-    const response = await fetch("http://localhost:3000/api/products", {
+    loading.value = true;
+    console.log(token.value);
+    const query = await fetch("http://localhost:3000/api/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.value}`,
       },
       body: JSON.stringify({
-        name: name.value,
-        description: description.value,
-        category: category.value,
-        originalPrice: originalPrice.value,
-        pictureUrl: pictureUrl.value,
-        endDate: endDate.value,
+        name: productName.value,
+        description: productDescription.value,
+        category: productCategory.value,
+        originalPrice: productOriginalPrice.value,
+        pictureUrl: productPictureUrl.value,
+        endDate: productEndDate.value,
       }),
     });
 
-    console.log("Fetch request sent, response received");
+    const res = await query.json();
 
-    if (!response.ok) {
-      console.error("Response not OK:", response);
-      throw new Error(
-        "Une erreur est survenue lors de la création du produit.",
-      );
+    if (query.ok) {
+      await router.push({ name: "Product", params: { productId: res.id } });
+    } else {
+      errorText.value =
+        `${res?.error}: ${res?.details}` ?? "Une erreur est survenue";
     }
 
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      console.error(
-        "Invalid content-type. Expected application/json but received " +
-          contentType,
-      );
-      const errorText = await response.text();
-      throw new Error(errorText);
-    }
-
-    const product = await response.json();
-    console.log("Product created:", product);
-    router.push({ name: "Product", params: { productId: product.id } });
-  } catch (error) {
-    console.error("Error while submitting form:", error);
+    loading.value = false;
+  } catch (e) {
+    console.error(e.message);
+    errorText.value = "Une erreur est survenue";
   }
-};
+}
 </script>
 
 <template>
@@ -80,20 +62,25 @@ const submitForm = async () => {
 
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <form @submit.prevent="submitForm">
-        <div class="alert alert-danger mt-4" role="alert" data-test-error>
-          Une erreur s'est produite
+      <form @submit.prevent="addProduct">
+        <div
+          v-if="errorText !== ''"
+          class="alert alert-danger mt-4"
+          role="alert"
+          data-test-error
+        >
+          {{ errorText }}
         </div>
 
         <div class="mb-3">
           <label for="product-name" class="form-label"> Nom du produit </label>
           <input
-            v-model="name"
             type="text"
             class="form-control"
             id="product-name"
             required
             data-test-product-name
+            v-model="productName"
           />
         </div>
 
@@ -102,25 +89,25 @@ const submitForm = async () => {
             Description
           </label>
           <textarea
-            v-model="description"
             class="form-control"
             id="product-description"
             name="description"
             rows="3"
             required
             data-test-product-description
+            v-model="productDescription"
           ></textarea>
         </div>
 
         <div class="mb-3">
           <label for="product-category" class="form-label"> Catégorie </label>
           <input
-            v-model="category"
             type="text"
             class="form-control"
             id="product-category"
             required
             data-test-product-category
+            v-model="productCategory"
           />
         </div>
 
@@ -130,7 +117,6 @@ const submitForm = async () => {
           </label>
           <div class="input-group">
             <input
-              v-model="originalPrice"
               type="number"
               class="form-control"
               id="product-original-price"
@@ -139,6 +125,7 @@ const submitForm = async () => {
               min="0"
               required
               data-test-product-price
+              v-model="productOriginalPrice"
             />
             <span class="input-group-text">€</span>
           </div>
@@ -149,13 +136,13 @@ const submitForm = async () => {
             URL de l'image
           </label>
           <input
-            v-model="pictureUrl"
             type="url"
             class="form-control"
             id="product-picture-url"
             name="pictureUrl"
             required
             data-test-product-picture
+            v-model="productPictureUrl"
           />
         </div>
 
@@ -164,25 +151,26 @@ const submitForm = async () => {
             Date de fin de l'enchère
           </label>
           <input
-            v-model="endDate"
             type="date"
             class="form-control"
             id="product-end-date"
             name="endDate"
             required
             data-test-product-end-date
+            v-model="productEndDate"
           />
         </div>
 
         <div class="d-grid gap-2">
           <button
-            type="button"
+            :disabled="loading"
+            type="submit"
             class="btn btn-primary"
-            @click="submitForm"
             data-test-submit
           >
             Ajouter le produit
             <span
+              v-if="loading"
               data-test-spinner
               class="spinner-border spinner-border-sm"
               role="status"

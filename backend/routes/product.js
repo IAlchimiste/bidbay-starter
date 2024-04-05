@@ -124,25 +124,32 @@ router.delete('/api/products/:productId', authMiddleware, async (req, res) => {
   }
 })
 
-router.post('/api/products/:productId/bids', authMiddleware, async (req, res) => {
+router.post('/api/products', authMiddleware, async (req, res) => {
   try {
-    const product = await Product.findOne({ where: { id: req.params.productId } })
-    if (!product) {
-      return res.status(404).json({ error: 'Product not found' })
+    const { name, description, category, originalPrice, pictureUrl, endDate } = req.body
+
+    if (!name || !description || !category || !originalPrice || !pictureUrl || !endDate) {
+      return res.status(400).json({ error: 'Invalid or missing fields', details: ['name', 'description', 'category', 'originalPrice', 'pictureUrl', 'endDate'] })
     }
-    // Check if the request body is valid
-    if (!req.body.amount) {
-      return res.status(400).json({ error: 'Missing or invalid fields' })
+
+    if (isNaN(originalPrice) || originalPrice <= 0) {
+      return res.status(400).json({ error: 'Le prix original doit être un nombre positif', details: ['originalPrice'] })
     }
-    const bid = await Bid.create({
-      productId: req.params.productId,
-      userId: req.user.id,
-      amount: req.body.amount
+
+    const newProduct = await Product.create({
+      name,
+      description,
+      category,
+      originalPrice,
+      pictureUrl,
+      endDate,
+      sellerId: req.user.id
     })
-    res.status(201).json(bid)
+
+    res.status(201).json(newProduct)
   } catch (error) {
     console.error(error)
-    res.status(500).json({ error: 'Internal Server Error' })
+    res.status(500).json({ message: 'Erreur lors de l\'ajout du produit' })
   }
 })
 
