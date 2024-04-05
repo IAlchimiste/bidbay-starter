@@ -6,7 +6,6 @@ import { useAuthStore } from "../store/auth";
 const { isAuthenticated, isAdmin, userData, token } = useAuthStore();
 
 const route = useRoute();
-const router = useRouter();
 
 const productId = ref(route.params.productId);
 
