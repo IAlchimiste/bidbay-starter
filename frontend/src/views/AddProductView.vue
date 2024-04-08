@@ -10,41 +10,47 @@ if (!isAuthenticated.value) {
   router.push({ name: "Login" });
 }
 
-const name = ref("");
-const description = ref("");
-const category = ref("");
-const originalPrice = ref("");
-const pictureUrl = ref("");
-const endDate = ref("");
+const productName = ref("");
+const productDescription = ref("");
+const productPictureUrl = ref("");
+const productCategory = ref("");
+const productOriginalPrice = ref("");
+const productEndDate = ref("");
 
-const submitForm = async () => {
+const loading = ref(false);
+const error = ref(false);
+
+async function addProduct() {
+  loading.value = true;
   try {
-    const response = await fetch("/api/products", {
+    let response = await fetch("http://localhost:3000/api/products", {
       method: "POST",
       headers: {
+        authorization: `Bearer ${token.value}`,
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token.value}`
+        accept: "application/json",
       },
       body: JSON.stringify({
-        name: name.value,
-        description: description.value,
-        category: category.value,
-        originalPrice: originalPrice.value,
-        pictureUrl: pictureUrl.value,
-        endDate: endDate.value,
-      })
+        name: productName.value,
+        description: productDescription.value,
+        pictureUrl: productPictureUrl.value,
+        category: productCategory.value,
+        originalPrice: productOriginalPrice.value,
+        endDate: productEndDate.value,
+      }),
     });
-
-    if (!response.ok) {
-      throw new Error("Une erreur est survenue lors de la création du produit.");
+    if (response.ok) {
+      let product = await response.json();
+      router.push({ name: "Product", params: { productId: product.id } });
+    } else {
+      error.value = true;
     }
-
-    const product = await response.json();
-    router.push({ name: "Product", params: { productId: product.id } });
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    error.value = true;
+  } finally {
+    loading.value = false;
   }
-};
+}
 </script>
 
 <template>
@@ -52,18 +58,23 @@ const submitForm = async () => {
 
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <form @submit.prevent="submitForm">
-        <div class="alert alert-danger mt-4" role="alert" data-test-error>
+      <form @submit.prevent="addProduct()">
+        <div
+          v-if="error"
+          class="alert alert-danger mt-4"
+          role="alert"
+          data-test-error
+        >
           Une erreur s'est produite
         </div>
 
         <div class="mb-3">
           <label for="product-name" class="form-label"> Nom du produit </label>
           <input
-              v-model="name"
             type="text"
             class="form-control"
             id="product-name"
+            v-model="productName"
             required
             data-test-product-name
           />
@@ -74,10 +85,10 @@ const submitForm = async () => {
             Description
           </label>
           <textarea
-              v-model="description"
             class="form-control"
             id="product-description"
             name="description"
+            v-model="productDescription"
             rows="3"
             required
             data-test-product-description
@@ -87,9 +98,9 @@ const submitForm = async () => {
         <div class="mb-3">
           <label for="product-category" class="form-label"> Catégorie </label>
           <input
-
             type="text"
             class="form-control"
+            v-model="productCategory"
             id="product-category"
             required
             data-test-product-category
@@ -102,10 +113,10 @@ const submitForm = async () => {
           </label>
           <div class="input-group">
             <input
-              v-model="originalPrice"
               type="number"
               class="form-control"
               id="product-original-price"
+              v-model="productOriginalPrice"
               name="originalPrice"
               step="1"
               min="0"
@@ -121,9 +132,9 @@ const submitForm = async () => {
             URL de l'image
           </label>
           <input
-            v-model="pictureUrl"
             type="url"
             class="form-control"
+            v-model="productPictureUrl"
             id="product-picture-url"
             name="pictureUrl"
             required
@@ -136,10 +147,10 @@ const submitForm = async () => {
             Date de fin de l'enchère
           </label>
           <input
-            v-model="endDate"
             type="date"
             class="form-control"
             id="product-end-date"
+            v-model="productEndDate"
             name="endDate"
             required
             data-test-product-end-date
@@ -147,17 +158,14 @@ const submitForm = async () => {
         </div>
 
         <div class="d-grid gap-2">
-          <button
-            type="submit"
-            class="btn btn-primary"
-            data-test-submit
-          >
+          <button type="submit" class="btn btn-primary" data-test-submit>
             Ajouter le produit
             <span
               data-test-spinner
               class="spinner-border spinner-border-sm"
               role="status"
-              aria-hidden="false"
+              aria-hidden="true"
+              v-if="loading"
             ></span>
           </button>
         </div>

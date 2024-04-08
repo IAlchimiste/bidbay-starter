@@ -1,14 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../consts/secret.js'
-/**
- * Middleware function type import
- * @typedef {import('express').RequestHandler} RequestHandler
- */
 
-/**
- * Middleware for authentification
- * @type {RequestHandler}
- */
 const authMiddleware = (req, res, next) => {
   // Récupération du token d'authentification depuis le header Authorization
   const authHeader = req.headers.authorization
