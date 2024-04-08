@@ -2,4 +2,4 @@
 export const authors = ["Arnaud Decourt", "Thomas Domenech"];
 
 // Groupe
-export const group = 0;
+export const group = 1;
