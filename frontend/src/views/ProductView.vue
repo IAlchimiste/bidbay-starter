@@ -1,51 +1,158 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useRoute, useRouter, RouterLink } from "vue-router";
 import { useAuthStore } from "../store/auth";
-import axios from "axios";
 
 const { isAuthenticated, isAdmin, userData, token } = useAuthStore();
 
-const countdown = ref("");
-const router = useRouter();
 const route = useRoute();
-const productId = ref(route.params.productId);
-const product = ref(null);
+const router = useRouter();
 
-/**
- * @param {number|string|Date|VarDate} date
- */
+const productId = ref(route.params.productId);
+
 function formatDate(date) {
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(date).toLocaleDateString("fr-FR", options);
 }
 
-onMounted(async () => {
+const product = ref(null);
+const bidAmount = ref(0);
+
+const loading = ref(false);
+const error = ref(false);
+
+async function fetchProduct() {
+  loading.value = true;
   try {
-    const response = await axios.get(
-      `http://localhost:3000/api/products/${productId.value}`,
+    let response = await fetch(
+      "http://localhost:3000/api/products/" + productId.value,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+        },
+      },
     );
-    product.value = response.data;
-    console.log(product.value.bids);
-    console.log(product.value);
+
+    if (response.ok) {
+      product.value = await response.json();
+    } else {
+      error.value = true;
+    }
   } catch (e) {
-    console.error(e);
+    error.value = true;
+  } finally {
+    loading.value = false;
   }
-});
+}
+fetchProduct();
+
+async function deleteProduct() {
+  loading.value = true;
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/products/" + productId.value,
+      {
+        method: "DELETE",
+        headers: {
+          authorization: `Bearer ${token.value}`,
+          accept: "application/json",
+        },
+      },
+    );
+    if (response.ok) {
+      router.push({ name: "User", params: { userId: "me" } });
+    } else {
+      error.value = true;
+    }
+  } catch (e) {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+}
+async function deleteBid(bidId) {
+  loading.value = true;
+  try {
+    const response = await fetch("http://localhost:3000/api/bids/" + bidId, {
+      method: "DELETE",
+      headers: {
+        authorization: `Bearer ${token.value}`,
+        accept: "application/json",
+      },
+    });
+    if (!response.ok) {
+      error.value = true;
+    }
+  } catch (e) {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+}
+async function addBid() {
+  loading.value = true;
+  console.log(bidAmount);
+  try {
+    const response = await fetch(
+      "http://localhost:3000/api/products/" + productId.value + "/bids",
+      {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token.value}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          price: bidAmount.value,
+        }),
+      },
+    );
+    if (response.ok) {
+      fetchProduct();
+    } else {
+      error.value = true;
+    }
+  } catch (e) {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+}
+
+let countdown = 0;
+//ne fonctionne pas
+// let date = new Date()
+// let end = formatDate(product.endDate)
+// countdown = date - end // temps restant en secondes
+
+// let intervalId = setInterval(tick(), 1000);
+
+// function tick() {
+//   if (this.countdown > 0) {
+//     countdown--;
+//   } else {
+//     clearInterval(intervalId);
+//   }
+// }
 </script>
 
 <template>
-  <div class="row" v-if="product">
-    <div class="text-center mt-4" data-test-loading>
+  <div class="row">
+    <div class="text-center mt-4" data-test-loading v-if="loading">
       <div class="spinner-border" role="status">
         <span class="visually-hidden">Chargement...</span>
       </div>
     </div>
 
-    <div class="alert alert-danger mt-4" role="alert" data-test-error>
+    <div
+      v-if="error"
+      class="alert alert-danger mt-4"
+      role="alert"
+      data-test-error
+    >
       Une erreur est survenue lors du chargement des produits.
     </div>
-    <div class="row" data-test-product>
+    <div class="row" v-if="product != null" data-test-product>
       <!-- Colonne de gauche : image et compte à rebours -->
       <div class="col-lg-4">
         <img
@@ -60,7 +167,12 @@ onMounted(async () => {
           </div>
           <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted" data-test-countdown>
-              Temps restant : {{ countdown }}
+              <div v-if="countdown > 0">
+                <p>Temps restant : {{ countdown }}</p>
+              </div>
+              <div v-else>
+                <p>Le temps est écoulé !</p>
+              </div>
             </h6>
           </div>
         </div>
@@ -74,16 +186,26 @@ onMounted(async () => {
               {{ product.name }}
             </h1>
           </div>
-          <div class="col-lg-6 text-end">
+          <div
+            v-if="userData.admin || userData.id == product.seller.id"
+            class="col-lg-6 text-end"
+          >
             <RouterLink
-              :to="{ name: 'ProductEdition', params: { productId: 'TODO' } }"
+              :to="{
+                name: 'ProductEdition',
+                params: { productId: product.id },
+              }"
               class="btn btn-primary"
               data-test-edit-product
             >
               Editer
             </RouterLink>
             &nbsp;
-            <button class="btn btn-danger" data-test-delete-product>
+            <button
+              @click="deleteProduct()"
+              class="btn btn-danger"
+              data-test-delete-product
+            >
               Supprimer
             </button>
           </div>
@@ -100,12 +222,12 @@ onMounted(async () => {
             Prix de départ : {{ product.originalPrice }} €
           </li>
           <li data-test-product-end-date>
-            Date de fin : {{ product.endDate }}
+            Date de fin : {{ formatDate(product.endDate) }}
           </li>
           <li>
             Vendeur :
             <router-link
-              :to="{ name: 'User', params: { userId: 'TODO' } }"
+              :to="{ name: 'User', params: { userId: product.seller.id } }"
               data-test-product-seller
             >
               {{ product.seller.username }}
@@ -114,11 +236,7 @@ onMounted(async () => {
         </ul>
 
         <h2 class="mb-3">Offres sur le produit</h2>
-        <table
-          class="table table-striped"
-          data-test-bids
-          v-if="product && product.value && product.value.bids"
-        >
+        <table class="table table-striped" data-test-bids>
           <thead>
             <tr>
               <th scope="col">Enchérisseur</th>
@@ -128,7 +246,7 @@ onMounted(async () => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="bid in product.value.bids" :key="bid.id" data-test-bid>
+            <tr v-for="bid in product.bids" :key="bid.id" data-test-bid>
               <td>
                 <router-link
                   :to="{ name: 'User', params: { userId: bid.bidder.id } }"
@@ -137,47 +255,38 @@ onMounted(async () => {
                   {{ bid.bidder.username }}
                 </router-link>
               </td>
-              <td data-test-bid-price>{{ bid.price }}</td>
+              <td data-test-bid-price>{{ bid.price }} €</td>
               <td data-test-bid-date>{{ formatDate(bid.date) }}</td>
               <td>
-                <button class="btn btn-danger btn-sm" data-test-delete-bid>
+                <button
+                  v-if="userData.admin || userData.id == bid.bidder.id"
+                  @click="deleteBid(bid.id)"
+                  class="btn btn-danger btn-sm"
+                  data-test-delete-bid
+                >
                   Supprimer
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-        <p
-          v-if="
-            !product ||
-            !product.value ||
-            !product.value.bids ||
-            product.value.bids.length === 0
-          "
-          data-test-no-bids
-        >
-          Aucune offre pour le moment
-        </p>
+        <p data-test-no-bids>Aucune offre pour le moment</p>
 
-        <form data-test-bid-form>
+        <form @submit.prevent="addBid()" data-test-bid-form>
           <div class="form-group">
             <label for="bidAmount">Votre offre :</label>
             <input
               type="number"
               class="form-control"
               id="bidAmount"
+              v-model="bidAmount"
               data-test-bid-form-price
             />
             <small class="form-text text-muted">
               Le montant doit être supérieur à 10 €.
             </small>
           </div>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            disabled
-            data-test-submit-bid
-          >
+          <button type="submit" class="btn btn-primary" data-test-submit-bid>
             Enchérir
           </button>
         </form>

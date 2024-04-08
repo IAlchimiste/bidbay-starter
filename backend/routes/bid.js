@@ -9,7 +9,7 @@ router.delete('/api/bids/:bidId', async (req, res) => {
   res.status(600).send()
 })
 
-router.post('/api/products/:productId/bids', authMiddleware, async (req, res) => {
+router.post('/api/products/:productId/bids', async (req, res) => {
   res.status(600).send()
 })
 

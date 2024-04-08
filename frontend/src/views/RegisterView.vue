@@ -18,7 +18,7 @@ const errorMessage = ref("");
 const isSubmitting = ref(false);
 
 const notMatchingPassword = computed(
-  () => password.value !== passwordConfirmation.value
+  () => password.value !== passwordConfirmation.value,
 );
 
 const registerUser = async () => {
