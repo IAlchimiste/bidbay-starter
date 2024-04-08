@@ -120,6 +120,24 @@ async function addBid() {
   }
 }
 
+function formatDurationInFrench(duration) {
+  let parts = [];
+  if (duration.hours > 0) {
+    parts.push(duration.hours + " heure" + (duration.hours > 1 ? "s" : ""));
+  }
+  if (duration.minutes > 0) {
+    parts.push(
+      duration.minutes + " minute" + (duration.minutes > 1 ? "s" : ""),
+    );
+  }
+  if (duration.seconds > 0) {
+    parts.push(
+      duration.seconds + " seconde" + (duration.seconds > 1 ? "s" : ""),
+    );
+  }
+  return parts.join(" ");
+}
+
 let countdown = ref(null);
 let secondsLeft = ref(null);
 
@@ -154,7 +172,12 @@ onMounted(async () => {
       secondsLeft.value = differenceInSeconds(product.value.endDate, now);
 
       if (secondsLeft.value > 0) {
-        countdown.value = formatDuration({ seconds: secondsLeft.value });
+        const duration = {
+          hours: Math.floor(secondsLeft.value / 3600),
+          minutes: Math.floor((secondsLeft.value % 3600) / 60),
+          seconds: secondsLeft.value % 60,
+        };
+        countdown.value = formatDurationInFrench(duration);
       } else {
         clearInterval(intervalId);
       }

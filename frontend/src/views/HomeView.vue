@@ -13,7 +13,13 @@ async function fetchProducts() {
 
   try {
     const response = await fetch("http://localhost:3000/api/products");
-    products.value = await response.json();
+    const data = await response.json();
+    if (Array.isArray(data)) {
+      products.value = data;
+    } else {
+      console.error("Unexpected response from API:", data);
+      error.value = true;
+    }
   } catch (e) {
     error.value = true;
   } finally {
@@ -130,7 +136,9 @@ fetchProducts();
             />
           </RouterLink>
           <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
+            <h5 class="card-title" data-test-product-name>
+              {{ product.name }}
+            </h5>
             <p class="card-text">{{ product.description }}</p>
             <p class="card-text">
               Vendeur :
