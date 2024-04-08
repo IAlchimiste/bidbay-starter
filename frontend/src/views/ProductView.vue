@@ -6,6 +6,7 @@ import axios from "axios";
 
 const { isAuthenticated, isAdmin, userData, token } = useAuthStore();
 
+const countdown = ref("");
 const router = useRouter();
 const route = useRoute();
 const productId = ref(route.params.productId);
@@ -25,6 +26,7 @@ onMounted(async () => {
       `http://localhost:3000/api/products/${productId.value}`,
     );
     product.value = response.data;
+    console.log(product.value.bids);
     console.log(product.value);
   } catch (e) {
     console.error(e);
@@ -115,7 +117,7 @@ onMounted(async () => {
         <table
           class="table table-striped"
           data-test-bids
-          v-if="product.value && product.value.bids"
+          v-if="product && product.value && product.value.bids"
         >
           <thead>
             <tr>
@@ -147,6 +149,7 @@ onMounted(async () => {
         </table>
         <p
           v-if="
+            !product ||
             !product.value ||
             !product.value.bids ||
             product.value.bids.length === 0
