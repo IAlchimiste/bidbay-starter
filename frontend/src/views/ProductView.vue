@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter, RouterLink } from "vue-router";
 import { useAuthStore } from "../store/auth";
+import { differenceInSeconds, formatDuration } from "date-fns";
 
 const { isAuthenticated, isAdmin, userData, token } = useAuthStore();
 
@@ -119,21 +120,47 @@ async function addBid() {
   }
 }
 
-let countdown = 0;
-//ne fonctionne pas
-// let date = new Date()
-// let end = formatDate(product.endDate)
-// countdown = date - end // temps restant en secondes
+let countdown = ref(null);
+let secondsLeft = ref(null);
 
-// let intervalId = setInterval(tick(), 1000);
+onMounted(async () => {
+  // Récupération des détails du produit
+  try {
+    let response = await fetch(
+      "http://localhost:3000/api/products/" + productId.value,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+        },
+      },
+    );
 
-// function tick() {
-//   if (this.countdown > 0) {
-//     countdown--;
-//   } else {
-//     clearInterval(intervalId);
-//   }
-// }
+    if (response.ok) {
+      product.value = await response.json();
+    } else {
+      error.value = true;
+    }
+  } catch (e) {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+
+  // Initialisation du compte à rebours
+  if (product.value) {
+    const intervalId = setInterval(() => {
+      const now = new Date();
+      secondsLeft.value = differenceInSeconds(product.value.endDate, now);
+
+      if (secondsLeft.value > 0) {
+        countdown.value = formatDuration({ seconds: secondsLeft.value });
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 1000);
+  }
+});
 </script>
 
 <template>
@@ -167,7 +194,7 @@ let countdown = 0;
           </div>
           <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted" data-test-countdown>
-              <div v-if="countdown > 0">
+              <div v-if="secondsLeft > 0">
                 <p>Temps restant : {{ countdown }}</p>
               </div>
               <div v-else>

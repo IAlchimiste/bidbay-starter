@@ -2,14 +2,14 @@
   "stats": {
     "suites": 1,
     "tests": 1,
-    "passes": 0,
+    "passes": 1,
     "pending": 0,
-    "failures": 1,
-    "start": "2024-04-08T12:25:59.117Z",
-    "end": "2024-04-08T12:25:59.366Z",
-    "duration": 249,
+    "failures": 0,
+    "start": "2024-04-08T13:21:58.470Z",
+    "end": "2024-04-08T13:21:58.593Z",
+    "duration": 123,
     "testsRegistered": 1,
-    "passPercent": 0,
+    "passPercent": 100,
     "pendingPercent": 0,
     "other": 0,
     "hasOther": false,
@@ -18,7 +18,7 @@
   },
   "results": [
     {
-      "uuid": "6b0e08d2-15cd-478f-b998-c01e85b1e6de",
+      "uuid": "5a980378-2fdc-4e18-b9ab-e1f4fa2ed660",
       "title": "",
       "fullFile": "cypress\\e2e\\meta\\authors.cy.js",
       "file": "cypress\\e2e\\meta\\authors.cy.js",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "ed88c5e1-9bcd-4b43-b8e4-085a6d5f6b2f",
+          "uuid": "3c5709f7-0513-4fa6-b00a-f196e85599d2",
           "title": "Meta",
           "fullFile": "",
           "file": "",
@@ -38,33 +38,29 @@
               "title": "Remplisser les infos de votre groupe dans frontend/meta/authors.js",
               "fullTitle": "Meta Remplisser les infos de votre groupe dans frontend/meta/authors.js",
               "timedOut": null,
-              "duration": 196,
-              "state": "failed",
-              "speed": null,
-              "pass": false,
-              "fail": true,
+              "duration": 68,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
               "pending": false,
               "context": null,
               "code": "expect(_authors.authors).to.not.deep.eq([\"John Doe (p12345678)\", \"Jane Doe (p12345678)\"]);\nexpect(_authors.group).to.oneOf([1, 2, 3]);",
-              "err": {
-                "message": "AssertionError: expected 0 to be one of [ 1, 2, 3 ]",
-                "estack": "AssertionError: expected 0 to be one of [ 1, 2, 3 ]\n    at Context.eval (webpack://frontend/./cypress/e2e/meta/authors.cy.js:10:21)",
-                "diff": null
-              },
-              "uuid": "a933e91d-289d-4de7-b8c1-69b7a8648a99",
-              "parentUUID": "ed88c5e1-9bcd-4b43-b8e4-085a6d5f6b2f",
+              "err": {},
+              "uuid": "cfc54281-459b-47d8-b9b2-dfb85b807196",
+              "parentUUID": "3c5709f7-0513-4fa6-b00a-f196e85599d2",
               "isHook": false,
               "skipped": false
             }
           ],
           "suites": [],
-          "passes": [],
-          "failures": [
-            "a933e91d-289d-4de7-b8c1-69b7a8648a99"
+          "passes": [
+            "cfc54281-459b-47d8-b9b2-dfb85b807196"
           ],
+          "failures": [],
           "pending": [],
           "skipped": [],
-          "duration": 196,
+          "duration": 68,
           "root": false,
           "rootEmpty": false,
           "_timeout": 2000
