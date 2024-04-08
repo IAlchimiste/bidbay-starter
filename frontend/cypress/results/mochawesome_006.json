@@ -5,9 +5,9 @@
     "passes": 0,
     "pending": 0,
     "failures": 1,
-    "start": "2024-04-08T12:11:25.291Z",
-    "end": "2024-04-08T12:11:25.886Z",
-    "duration": 595,
+    "start": "2024-04-08T12:25:59.117Z",
+    "end": "2024-04-08T12:25:59.366Z",
+    "duration": 249,
     "testsRegistered": 1,
     "passPercent": 0,
     "pendingPercent": 0,
@@ -18,7 +18,7 @@
   },
   "results": [
     {
-      "uuid": "039a24d5-4b02-4bc5-9462-441b98c625c4",
+      "uuid": "6b0e08d2-15cd-478f-b998-c01e85b1e6de",
       "title": "",
       "fullFile": "cypress\\e2e\\meta\\authors.cy.js",
       "file": "cypress\\e2e\\meta\\authors.cy.js",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "5b696a6a-6a5a-435a-a812-a566939eb200",
+          "uuid": "ed88c5e1-9bcd-4b43-b8e4-085a6d5f6b2f",
           "title": "Meta",
           "fullFile": "",
           "file": "",
@@ -38,7 +38,7 @@
               "title": "Remplisser les infos de votre groupe dans frontend/meta/authors.js",
               "fullTitle": "Meta Remplisser les infos de votre groupe dans frontend/meta/authors.js",
               "timedOut": null,
-              "duration": 529,
+              "duration": 196,
               "state": "failed",
               "speed": null,
               "pass": false,
@@ -51,8 +51,8 @@
                 "estack": "AssertionError: expected 0 to be one of [ 1, 2, 3 ]\n    at Context.eval (webpack://frontend/./cypress/e2e/meta/authors.cy.js:10:21)",
                 "diff": null
               },
-              "uuid": "98d97228-b795-4cb2-95cf-df3d5ddd4551",
-              "parentUUID": "5b696a6a-6a5a-435a-a812-a566939eb200",
+              "uuid": "a933e91d-289d-4de7-b8c1-69b7a8648a99",
+              "parentUUID": "ed88c5e1-9bcd-4b43-b8e4-085a6d5f6b2f",
               "isHook": false,
               "skipped": false
             }
@@ -60,11 +60,11 @@
           "suites": [],
           "passes": [],
           "failures": [
-            "98d97228-b795-4cb2-95cf-df3d5ddd4551"
+            "a933e91d-289d-4de7-b8c1-69b7a8648a99"
           ],
           "pending": [],
           "skipped": [],
-          "duration": 529,
+          "duration": 196,
           "root": false,
           "rootEmpty": false,
           "_timeout": 2000
